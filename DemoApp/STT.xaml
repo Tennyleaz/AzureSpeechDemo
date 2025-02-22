@@ -1,0 +1,38 @@
+﻿<Window x:Class="DemoApp.STT"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DemoApp"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Speach to Text and Pronunciation Assessment " Height="450" Width="800">
+    <Grid>
+        <TextBlock Name="tbDebug" Margin="10,15,200,0" VerticalAlignment="Top" Foreground="Green">Status:</TextBlock>
+        <TextBox Name="tbText" Margin="10,36,200,120" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"></TextBox>
+        <TextBlock Margin="10,0,200,95" VerticalAlignment="Bottom">Recognizing:</TextBlock>
+        <TextBox Name="tbRecognizing" Margin="10,0,200,10" Height="80" VerticalAlignment="Bottom" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"></TextBox>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Width="180" Margin="0,10,10,10">
+            <Label>Locale:</Label>
+            <ComboBox Name="cbLocale" SelectionChanged="CbLocale_OnSelectionChanged" IsEnabled="{Binding ElementName=btnStart, Path=IsEnabled}"></ComboBox>
+            <TextBlock Name="tbLocaleFeature" Margin="5,5,0,5" Height="80">Locale features:</TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="5,0,0,0">Timeout MS:</TextBlock>
+                <TextBox Name="tbTimeoutMs" Width="80" Margin="20,0,0,0">2000</TextBox>
+            </StackPanel>
+            <CheckBox Name="checkPhoneme" VerticalContentAlignment="Center" Margin="0,2,0,2">Phoneme</CheckBox>
+            <CheckBox Name="checkGrade" VerticalContentAlignment="Center" Margin="0,2,0,2">Grade</CheckBox>
+            <Button Name="btnStart" Height="30" Click="BtnStart_OnClick" Margin="0,10,0,0">Start WAV to Text</Button>
+            <Button Name="btnStop" Height="30" Click="BtnStop_OnClick" Margin="0,10,0,0" IsEnabled="False">Stop</Button>
+            <Label>Pronunciation Grading:</Label>
+            <Label Name="grades" FontSize="16">0/100</Label>
+            <Label>Time:</Label>
+            <Label Name="timespan" FontSize="16">0 s</Label>
+        </StackPanel>
+        <ScrollViewer Margin="10,36,200,10" Visibility="Collapsed" Name="scrollViewer">
+            <WrapPanel Name="wrapPanel" Orientation="Horizontal">
+                <!-- Add your custom items programmatically or statically here -->
+            </WrapPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

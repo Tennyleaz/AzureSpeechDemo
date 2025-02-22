@@ -1,0 +1,42 @@
+﻿<Window x:Class="DemoApp.TTS"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DemoApp"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Loaded="MainWindow_OnLoaded"
+        Title="Azure TTS" Height="450" Width="800">
+    <Grid>
+        <TextBox Name="tbText" Margin="10,10,200,10" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"></TextBox>
+        <ProgressBar Name="progress" VerticalAlignment="Bottom" Margin="10,0,200,10" Height="3" IsIndeterminate="True" Visibility="Collapsed"/>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Width="180" Margin="0,10,10,10">
+            <Label>Locale:</Label>
+            <ComboBox Name="cbLocale"></ComboBox>
+            <Label>Voice:</Label>
+            <ComboBox Name="cbVoice"></ComboBox>
+            <Label>Rate:</Label>
+            <ComboBox Name="cbRate">
+                <ComboBoxItem>x-slow</ComboBoxItem>
+                <ComboBoxItem>slow</ComboBoxItem>
+                <ComboBoxItem IsSelected="True">medium</ComboBoxItem>
+                <ComboBoxItem>fast</ComboBoxItem>
+                <ComboBoxItem>x-fast</ComboBoxItem>
+            </ComboBox>
+            <Label>Volume:</Label>
+            <ComboBox Name="cbVolume">
+                <ComboBoxItem>silent</ComboBoxItem>
+                <ComboBoxItem>x-soft</ComboBoxItem>
+                <ComboBoxItem>soft</ComboBoxItem>
+                <ComboBoxItem>medium</ComboBoxItem>
+                <ComboBoxItem>loud</ComboBoxItem>
+                <ComboBoxItem IsSelected="True">x-loud</ComboBoxItem>
+            </ComboBox>
+            <Button Name="btnStart" Margin="0,10,0,0" Height="30" 
+                    Click="BtnStart_OnClick">Start TTS</Button>
+            <Button Name="btnCancel" Margin="0,10,0,0" Height="30" IsEnabled="False"
+                    Click="BtnCancel_OnClick">Stop</Button>
+        </StackPanel>
+    </Grid>
+</Window>
