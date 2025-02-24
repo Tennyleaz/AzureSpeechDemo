@@ -192,7 +192,8 @@ namespace DemoApp
                 if (pronunciationAssessmentResult != null)
                     score = (int)pronunciationAssessmentResult.AccuracyScore;
 
-                RunOnUi(FinalTextResult);
+                if (!string.IsNullOrEmpty(e.Result.Text))
+                    RunOnUi(FinalTextResult);
             }
             else
             {
@@ -210,10 +211,10 @@ namespace DemoApp
             void FinalTextResult()
             {
                 Console.WriteLine("Recognized: " + e.Result.Text);
-                tbText.Text += e.Result.Text + "\n";
-            }
-
-            
+                long ms = e.Result.OffsetInTicks / 10000;
+                TimeSpan ts = TimeSpan.FromMilliseconds(ms);
+                tbText.Text += $"[{ts.ToString(@"mm\:ss")}]\n" + e.Result.Text + "\n";
+            }            
         }
 
         private void SpeechRecognizer_Recognizing(object sender, SpeechRecognitionEventArgs e)
