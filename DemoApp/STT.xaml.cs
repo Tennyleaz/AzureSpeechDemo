@@ -210,10 +210,17 @@ namespace DemoApp
 
             void FinalTextResult()
             {
-                Console.WriteLine("Recognized: " + e.Result.Text);
-                long ms = e.Result.OffsetInTicks / 10000;
-                TimeSpan ts = TimeSpan.FromMilliseconds(ms);
-                tbText.Text += $"[{ts.ToString(@"mm\:ss")}]\n" + e.Result.Text + "\n";
+                //Console.WriteLine("Recognized: " + e.Result.Text);
+                if (chkTimestamp.IsChecked == true)
+                {
+                    long ms = e.Result.OffsetInTicks / 10000;
+                    TimeSpan ts = TimeSpan.FromMilliseconds(ms);
+                    tbText.Text += $"[{ts.ToString(@"mm\:ss")}]\n" + e.Result.Text + "\n";
+                }
+                else
+                {
+                    tbText.Text += e.Result.Text + "\n";
+                }
             }            
         }
 
@@ -331,13 +338,13 @@ namespace DemoApp
             {
                 tbLocaleFeature.Text = "Locale features:\nPronunciation: \tO\nProsody: \tO\nContent: \tO\nPhoneme: \tIPA";
                 checkPhoneme.IsEnabled = true;
-                checkPhoneme.IsChecked = true;
+                checkPhoneme.IsChecked = false;
             }
             else if (Locale == "zh-CN")
             {
                 tbLocaleFeature.Text = "Locale features:\nPronunciation: \tO\nProsody: \tX\nContent: \tX\nPhoneme: \tSAPI";
                 checkPhoneme.IsEnabled = true;
-                checkPhoneme.IsChecked = true;
+                checkPhoneme.IsChecked = false;
             }
             else
             {

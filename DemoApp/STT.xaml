@@ -22,6 +22,7 @@
             </StackPanel>
             <CheckBox Name="checkPhoneme" VerticalContentAlignment="Center" Margin="0,2,0,2">Phoneme</CheckBox>
             <CheckBox Name="checkGrade" VerticalContentAlignment="Center" Margin="0,2,0,2">Grade</CheckBox>
+            <CheckBox Name="chkTimestamp" VerticalContentAlignment="Center" Margin="0,2,0,2">Timestamp</CheckBox>
             <Button Name="btnStart" Height="30" Click="BtnStart_OnClick" Margin="0,10,0,0">Start WAV to Text</Button>
             <Button Name="btnStop" Height="30" Click="BtnStop_OnClick" Margin="0,10,0,0" IsEnabled="False">Stop</Button>
             <Label>Pronunciation Grading:</Label>
