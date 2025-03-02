@@ -22,12 +22,16 @@
             <Button Name="btnStop" Height="30" Click="BtnStop_OnClick" Margin="0,10,0,0" IsEnabled="False">Stop</Button>
             <Label>Time:</Label>
             <Label Name="timespan" FontSize="16">0 s</Label>
+            <Button Name="btnCopy" Height="30" Click="BtnCopy_OnClick" Margin="0,10,0,0">Copy All</Button>
         </StackPanel>
         <ListBox Name="listbox" Margin="10,36,200,10" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:ConversationItem}">
                     <StackPanel>
-                        <TextBlock Text="{Binding SpeakerId}" FontWeight="Bold"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding SpeakerId}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding TimeText}" Margin="4,0,0,0"/>
+                        </StackPanel>
                         <TextBlock Text="{Binding Text}" TextWrapping="Wrap"/>
                     </StackPanel>
                 </DataTemplate>

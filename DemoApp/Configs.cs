@@ -77,6 +77,8 @@ namespace DemoApp
             "pt-BR",
             "es-MX",
             "es-ES",
+            "zh-TW",
+            "zh-HK"
         ];
     }
 }

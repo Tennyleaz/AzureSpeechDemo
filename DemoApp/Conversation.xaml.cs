@@ -129,6 +129,10 @@ namespace DemoApp
             last.Text = e.Result.Text;
             last.SpeakerId = e.Result.SpeakerId;
 
+            TimeSpan strartTime = TimeSpan.FromTicks(e.Result.OffsetInTicks);
+            TimeSpan endTime = strartTime + e.Result.Duration;
+            last.TimeText = $"{strartTime.ToString(@"mm\:ss")} - {endTime.ToString(@"mm\:ss")}";
+
             void UpdateText()
             {
                 //tbDebug.Text = "Result: " + e.Result.Reason;
@@ -171,12 +175,24 @@ namespace DemoApp
             btnStart.IsEnabled = true;
             btnStop.IsEnabled = false;
         }
+
+        private void BtnCopy_OnClick(object sender, RoutedEventArgs e)
+        {
+            string text = "";
+            foreach (ConversationItem item in conversationItems)
+            {
+                text += item.ToString() + "\n";
+            }
+            Clipboard.Clear();
+            Clipboard.SetText(text);
+        }
     }
 
     internal class ConversationItem : INotifyPropertyChanged
     {
         private string _speakerId;
         private string _text;
+        private string _timeText;
 
         public string SpeakerId
         {
@@ -204,6 +220,19 @@ namespace DemoApp
             }
         }
 
+        public string TimeText
+        {
+            get => _timeText;
+            set
+            {
+                if (_timeText != value)
+                {
+                    _timeText = value;
+                    OnPropertyChanged(nameof(TimeText));
+                }
+            }
+        }
+
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -213,7 +242,7 @@ namespace DemoApp
 
         public override string ToString()
         {
-            return $"[Speaker {SpeakerId}] {Text}";
+            return $"{SpeakerId} [{TimeText}]\n{Text}";
         }
     }
 }
