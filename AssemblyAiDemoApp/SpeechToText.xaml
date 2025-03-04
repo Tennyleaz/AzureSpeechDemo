@@ -1,0 +1,68 @@
+﻿<Window x:Class="AssemblyAiDemoApp.SpeechToText"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AssemblyAiDemoApp"
+        Loaded="Window_Loaded"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d"
+        Title="Assembly AI Speech to Text" Height="450" Width="800">
+    <Grid>
+        <!--<TextBlock Text="Audio URL:" Margin="10,15,200,0" VerticalAlignment="Top"/>
+        <TextBox Name="tbUrl" Margin="10,36,200,0" Height="22" VerticalAlignment="Top"/>-->
+        <TextBlock Name="tbDebug" Margin="10,15,200,0" VerticalAlignment="Top" Foreground="Green">Status:</TextBlock>
+        <TextBox Name="tbText" Margin="10,36,200,120" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" IsReadOnly="True"/>
+        <TextBlock Margin="10,0,200,95" VerticalAlignment="Bottom">Recognizing:</TextBlock>
+        <TextBox Name="tbRecognizing" Margin="10,0,200,10" Height="80" VerticalAlignment="Bottom" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"></TextBox>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Width="180" Margin="0,10,10,10">
+            <Label>Locale:</Label>
+            <ComboBox Name="cbLocale" SelectionChanged="CbLocale_OnSelectionChanged" IsEnabled="{Binding ElementName=btnStart, Path=IsEnabled}"></ComboBox>
+            <Label>Model:</Label>
+            <ComboBox Name="cbModel" SelectionChanged="CbModel_OnSelectionChanged" IsEnabled="{Binding ElementName=btnStart, Path=IsEnabled}">
+                <ComboBoxItem IsSelected="True">Best</ComboBoxItem>
+                <ComboBoxItem>Nano</ComboBoxItem>
+            </ComboBox>
+            <!--<StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                <TextBlock Margin="5,0,0,0">Timeout MS:</TextBlock>
+                <TextBox Name="tbTimeoutMs" Width="80" Margin="20,0,0,0">2000</TextBox>
+            </StackPanel>-->
+            <CheckBox Name="chkAutoDetect" VerticalContentAlignment="Center" Margin="0,4,0,2">Auto Detect Language</CheckBox>
+            <CheckBox Name="chkSpeaker" VerticalContentAlignment="Center" Margin="0,2,0,4" 
+                      Checked="Speaker_OnChecked" Unchecked="Speaker_OnUnChecked">Speaker Diarization</CheckBox>
+            <ComboBox Name="cbSpeakerCount" IsEnabled="{Binding ElementName=chkSpeaker, Path=IsChecked}">
+                <ComboBoxItem IsSelected="True">Speakers count not set</ComboBoxItem>
+                <ComboBoxItem>2</ComboBoxItem>
+                <ComboBoxItem>3</ComboBoxItem>
+                <ComboBoxItem>4</ComboBoxItem>
+                <ComboBoxItem>5</ComboBoxItem>
+                <ComboBoxItem>6</ComboBoxItem>
+                <ComboBoxItem>7</ComboBoxItem>
+                <ComboBoxItem>8</ComboBoxItem>
+                <ComboBoxItem>9</ComboBoxItem>
+                <ComboBoxItem>10</ComboBoxItem>
+            </ComboBox>
+            <!--<CheckBox Name="chkTimestamp" VerticalContentAlignment="Center" Margin="0,4,0,2">Timestamp</CheckBox>-->
+            <Button Name="btnStart" Height="30" Click="BtnStart_OnClick" Margin="0,10,0,0">Start file to Text</Button>
+            <Button Name="btnStop" Height="30" Click="BtnStop_OnClick" Margin="0,10,0,0" IsEnabled="False">Stop</Button>
+            <Label>Time:</Label>
+            <Label Name="timespan" FontSize="16">0 s</Label>
+            <Button Name="btnCopy" Height="30" Click="BtnCopy_OnClick" Margin="0,10,0,0">Copy All</Button>
+        </StackPanel>
+        <ListBox Name="listbox" Margin="10,36,200,10" Visibility="Collapsed"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:ConversationItem}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding SpeakerId}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding TimeText}" Margin="4,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding Text}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ProgressBar Name="progress" IsIndeterminate="True" Height="4" VerticalAlignment="Bottom" Margin="10,0,200,10" Visibility="Collapsed"/>
+    </Grid>
+</Window>
