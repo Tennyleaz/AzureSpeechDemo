@@ -23,14 +23,60 @@ namespace AssemblyAiDemoApp
     {
         private AssemblyAIClient client;
         private NextcloudManager manager = new NextcloudManager();
-        private List<string> locales = new List<string>();
+        private readonly List<string> localesNano = new List<string>();
+        private readonly List<string> localesBest;
         private CancellationTokenSource cts;
         internal ObservableCollection<ConversationItem> conversationItems { get; set; } = new ObservableCollection<ConversationItem>();
         private Stopwatch stopwatch;
 
+        public string Locale
+        {
+            get
+            {
+                if (cbModel.SelectedIndex == 1)  // nano model
+                {
+                    return localesNano[cbLocale.SelectedIndex];
+                }
+                else  // best model
+                {
+                    return localesBest[cbLocale.SelectedIndex];
+                }
+            }
+        }
+
         public SpeechToText()
         {
             InitializeComponent();
+
+            var languageValues = Enum.GetValues(typeof(TranscriptLanguageCode));
+            foreach (var lang in languageValues)
+            {
+                localesNano.Add(lang.ToString());
+            }
+
+            localesBest = new List<string>()
+            {
+                "En",
+                "EnAu",
+                "EnUk",
+                "EnUs",
+                "Es",
+                "Fr",
+                "De",
+                "It",
+                "Pt",
+                "Nl",
+                "Hi",
+                "Ja",
+                "Zh",
+                "Fi",
+                "Ko",
+                "Pl",
+                "Ru",
+                "Tr",
+                "Uk",
+                "Vi"
+            };
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -45,14 +91,8 @@ namespace AssemblyAiDemoApp
                 tbRecognizing.Text = ex.ToString();
             }
 
-            var languageValues = Enum.GetValues(typeof(TranscriptLanguageCode));
-            foreach (var lang in languageValues)
-            {
-                locales.Add(lang.ToString());
-            }
-
-            cbLocale.ItemsSource = locales;
-            cbLocale.SelectedIndex = 3;
+            cbLocale.ItemsSource = localesBest;
+            cbLocale.SelectedIndex = 3;  // EnUs
         }
 
         private async void BtnStart_OnClick(object sender, RoutedEventArgs e)
@@ -76,10 +116,11 @@ namespace AssemblyAiDemoApp
                 return;
 
             // Transcribe file at remote URL
+            TranscriptLanguageCode transcriptLanguageCode = (TranscriptLanguageCode)Enum.Parse(typeof(TranscriptLanguageCode), Locale, true);
             TranscriptOptionalParams tp = new TranscriptOptionalParams
             {
                 //AudioUrl = uri.ToString(),
-                LanguageCode = TranscriptLanguageCode.EnUs,
+                LanguageCode = transcriptLanguageCode,
                 LanguageDetection = chkAutoDetect.IsChecked,
                 SpeechModel = cbModel.SelectedIndex == 1 ? SpeechModel.Nano : SpeechModel.Best,
                 SpeakerLabels = chkSpeaker.IsChecked,
@@ -170,12 +211,32 @@ namespace AssemblyAiDemoApp
 
         private void CbLocale_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            // disable speaker id for some languages in nano
+            bool isSupported = false;
+            if (cbModel.SelectedIndex == 1)
+            {
+                isSupported = localesBest.Contains(Locale);
+            }
+            else
+            {
+                isSupported = true;  // best model always support speaker id
+            }
+            chkSpeaker.IsEnabled = isSupported;
+            if (!isSupported)
+                chkSpeaker.IsChecked = false;
         }
 
         private void CbModel_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            if (cbModel.SelectedIndex == 1)
+            {
+                cbLocale.ItemsSource = localesNano;
+            }
+            else
+            {
+                cbLocale.ItemsSource = localesBest;
+                cbLocale.SelectedIndex = 3;
+            }
         }
 
         private void Speaker_OnChecked(object sender, RoutedEventArgs e)
