@@ -63,6 +63,9 @@
     </ApplicationDefinition>
     <Compile Include="Keys.cs" />
     <Compile Include="NextcloudManager.cs" />
+    <Compile Include="RealtimeSpeak.xaml.cs">
+      <DependentUpon>RealtimeSpeak.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SpeechToText.xaml.cs">
       <DependentUpon>SpeechToText.xaml</DependentUpon>
     </Compile>
@@ -78,6 +81,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="RealtimeSpeak.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SpeechToText.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

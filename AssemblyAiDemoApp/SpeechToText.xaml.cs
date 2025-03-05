@@ -124,6 +124,7 @@ namespace AssemblyAiDemoApp
                 LanguageDetection = chkAutoDetect.IsChecked,
                 SpeechModel = cbModel.SelectedIndex == 1 ? SpeechModel.Nano : SpeechModel.Best,
                 SpeakerLabels = chkSpeaker.IsChecked,
+                FormatText = true
             };
 
             if (chkSpeaker.IsChecked == true && cbSpeakerCount.SelectedIndex > 0)

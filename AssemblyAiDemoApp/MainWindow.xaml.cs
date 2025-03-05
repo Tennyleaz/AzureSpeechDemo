@@ -45,5 +45,13 @@ namespace AssemblyAiDemoApp
             stt.ShowDialog();
             Show();
         }
+
+        private void BtnRealtimeStt_OnClick(object sender, RoutedEventArgs e)
+        {
+            Hide();
+            RealtimeSpeak stt = new RealtimeSpeak();
+            stt.ShowDialog();
+            Show();
+        }
     }
 }

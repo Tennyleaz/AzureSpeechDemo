@@ -10,5 +10,6 @@
         Title="Assembly AI Demo" Height="450" Width="450">
     <StackPanel Orientation="Vertical">
         <Button Name="btnSTT" Click="BtnSTT_OnClick" Height="30" Margin="20,20,20,0">Speak to Text</Button>
+        <Button Name="btnRealtimeStt" Click="BtnRealtimeStt_OnClick" Height="30" Margin="20,20,20,0">Realtime Speak to Text</Button>
     </StackPanel>
 </Window>
