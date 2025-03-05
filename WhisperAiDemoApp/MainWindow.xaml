@@ -1,0 +1,44 @@
+﻿<Window x:Class="WhisperAiDemoApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WhisperAiDemoApp"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Whisper AI demo" Height="600" Width="800">
+    <DockPanel>
+        <GroupBox Header="Model Setup" Name="setupBox" Margin="10" DockPanel.Dock="Top">
+            <Grid>
+                <Label VerticalAlignment="Top" Margin="5,5,0,0">Your GGML model directory:</Label>
+                <TextBox Name="tbGGMLModel" Margin="10,30,140,0" Height="24" VerticalAlignment="Top" IsReadOnly="True" VerticalContentAlignment="Center"/>
+                <Button Name="btnSelectModel" Margin="0,30,10,0" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" 
+                        Click="BtnSelectModel_OnClick" Width="120">Select Directory</Button>
+                <Label VerticalAlignment="Top" Margin="5,60,0,0">Download model:</Label>
+                <ComboBox Name="cbModel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,62,0,0" Width="100" Height="24"></ComboBox>
+                <Button Name="btnDownloadModel" Margin="280,62,10,0" Height="24" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                        Click="BtnDownloadModel_OnClick" Width="130">Download Model</Button>
+                <Label VerticalAlignment="Top" Margin="5,90,0,0">Models found in /model direcrory:</Label>
+                <Label Name="lbFoundModels" VerticalAlignment="Top" Margin="5,110,0,0" FontWeight="Bold">No models found.</Label>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Speech to Text" Name="speekBox" Margin="10,0,10,10">
+            <Grid>
+                <TextBlock Name="tbDebug" Margin="10,15,200,0" VerticalAlignment="Top" Foreground="Green">Status:</TextBlock>
+                <TextBox Name="tbText" Margin="10,36,200,120" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"></TextBox>
+                <TextBlock Margin="10,0,200,95" VerticalAlignment="Bottom">Recognizing:</TextBlock>
+                <TextBox Name="tbRecognizing" Margin="10,0,200,10" Height="80" VerticalAlignment="Bottom" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"></TextBox>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Width="180" Margin="0,10,10,10">
+                    <Label>Locale:</Label>
+                    <ComboBox Name="cbLocale" SelectionChanged="CbLocale_OnSelectionChanged" IsEnabled="{Binding ElementName=btnStart, Path=IsEnabled}"></ComboBox>
+                    <Label>Model:</Label>
+                    <ComboBox Name="cbSpeechModel" SelectionChanged="CbSpeechModel_OnSelectionChanged" IsEnabled="{Binding ElementName=btnStart, Path=IsEnabled}"/>
+                    <Button Name="btnStart" Height="30" Click="BtnStart_OnClick" Margin="0,10,0,0">Start WAV to Text</Button>
+                    <Button Name="btnStop" Height="30" Click="BtnStop_OnClick" Margin="0,10,0,0" IsEnabled="False">Stop</Button>
+                    <Label>Time:</Label>
+                    <Label Name="timespan" FontSize="16">0 s</Label>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+    </DockPanel>
+</Window>
