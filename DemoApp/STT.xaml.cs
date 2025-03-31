@@ -68,10 +68,14 @@ namespace DemoApp
             }
 
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "WAV files (*.wav)|*.wav";
+            dialog.Filter = "WAV files (*.wav)|*.wav| MP3 files (*.mp3)|*.mp3| AAC files (*.aac)|*.aac";
             dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
             dialog.Title = "Select a .WAV file";
             if (dialog.ShowDialog() != true)
+                return;
+
+            string fileName = FfmpegConverter.ConvertWavFormat(dialog.FileName);
+            if (fileName == null)
                 return;
 
             btnStart.IsEnabled = false;
@@ -84,7 +88,7 @@ namespace DemoApp
             speechConfig.SpeechRecognitionLanguage = Locale;
             speechConfig.SetProperty(PropertyId.Speech_SegmentationSilenceTimeoutMs, timeout.ToString());
 
-            using (AudioConfig audioConfig = AudioConfig.FromWavFileInput(dialog.FileName))
+            using (AudioConfig audioConfig = AudioConfig.FromWavFileInput(fileName))
             {
                 stopwatch = new Stopwatch();
                 stopwatch.Start();

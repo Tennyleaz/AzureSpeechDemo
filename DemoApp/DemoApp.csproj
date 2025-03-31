@@ -65,6 +65,7 @@
     <Compile Include="Conversation.xaml.cs">
       <DependentUpon>Conversation.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FfmpegConverter.cs" />
     <Compile Include="STT.xaml.cs">
       <DependentUpon>STT.xaml</DependentUpon>
     </Compile>

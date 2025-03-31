@@ -43,6 +43,8 @@
                 <ComboBoxItem>10</ComboBoxItem>
             </ComboBox>
             <!--<CheckBox Name="chkTimestamp" VerticalContentAlignment="Center" Margin="0,4,0,2">Timestamp</CheckBox>-->
+            <CheckBox Name="chkAutoChapter" Margin="0,4,0,0" Checked="ChkAutoChapter_OnChecked">Auto Chapters</CheckBox>
+            <CheckBox Name="chkSummary" Margin="0,4,0,0" Checked="ChkSummary_OnChecked">Summary</CheckBox>
             <Button Name="btnStart" Height="30" Click="BtnStart_OnClick" Margin="0,10,0,0">Start file to Text</Button>
             <Button Name="btnStop" Height="30" Click="BtnStop_OnClick" Margin="0,10,0,0" IsEnabled="False">Stop</Button>
             <Label>Time:</Label>

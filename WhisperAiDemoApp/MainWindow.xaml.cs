@@ -1,4 +1,6 @@
 ﻿using Microsoft.Win32;
+using NAudio.Wave.SampleProviders;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -35,6 +38,7 @@ namespace WhisperAiDemoApp
         private string modelPath;
         private readonly List<GgmlType> availableModels = new List<GgmlType>();
         private Stopwatch stopwatch;
+        private CancellationTokenSource cts;
 
         public MainWindow()
         {
@@ -99,6 +103,7 @@ namespace WhisperAiDemoApp
         private async void BtnDownloadModel_OnClick(object sender, RoutedEventArgs e)
         {
             setupBox.IsEnabled = false;
+            Cursor = Cursors.Wait;
             string fileName = $"{cbModel.SelectedItem}.ggml";
             try
             {
@@ -108,6 +113,7 @@ namespace WhisperAiDemoApp
             {
                 MessageBox.Show(ex.Message);
             }
+            Cursor = Cursors.Arrow;
             setupBox.IsEnabled = true;
         }
 
@@ -151,13 +157,18 @@ namespace WhisperAiDemoApp
 
             btnStart.IsEnabled = false;
             btnStop.IsEnabled = true;
+            Cursor = Cursors.Wait;
             tbText.Text = "";
             tbRecognizing.Text = "";
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
+            cts = new CancellationTokenSource();
 
             try
             {
                 // Optional logging from the native library
                 using var whisperLogger = LogProvider.AddConsoleLogging(WhisperLogLevel.Debug);
+                //using var whisperLogger = LogProvider.AddLogger(WriteLog);
 
                 // This section creates the whisperFactory object which is used to create the processor object.
                 using var whisperFactory = WhisperFactory.FromPath(SelectedModelFile);
@@ -169,25 +180,45 @@ namespace WhisperAiDemoApp
                     .Build();
 
                 tbDebug.Text = "Loaded " + dialog.FileName;
+
+
+                // This section opens the audio file and converts it to a wav file with 16Khz sample rate.
                 using var fileStream = File.OpenRead(dialog.FileName);
+                using var wavStream = new MemoryStream();
+
+                using var reader = new WaveFileReader(fileStream);
+                var resampler = new WdlResamplingSampleProvider(reader.ToSampleProvider(), 16000);
+                WaveFileWriter.WriteWavFileToStream(wavStream, resampler.ToWaveProvider16());
+
+                // This section sets the wavStream to the beginning of the stream. (This is required because the wavStream was written to in the previous section)
+                wavStream.Seek(0, SeekOrigin.Begin);
 
                 // This section processes the audio file and prints the results (start time, end time and text) to the console.
-                await foreach (var result in processor.ProcessAsync(fileStream))
+                await foreach (var result in processor.ProcessAsync(wavStream, cts.Token))
                 {
                     Console.WriteLine($"{result.Start}->{result.End}: {result.Text}");
-                    tbText.Text += $"{result.Start}->{result.End}: {result.Text}\n";
+                    tbText.Text += $"{result.Text}\n";
                 }
+
+                tbRecognizing.Text = "Done.";
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
                 tbRecognizing.Text = ex.ToString();
             }
+
+            cts.Dispose();
+            stopwatch.Stop();
+            timespan.Content = $"{stopwatch.Elapsed.TotalSeconds} s";
+            Cursor = Cursors.Arrow;
+            btnStart.IsEnabled = true;
+            btnStop.IsEnabled = false;
         }
 
         private void BtnStop_OnClick(object sender, RoutedEventArgs e)
         {
-
+            cts?.Cancel();
         }
 
         private void CbLocale_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,10 +59,14 @@ namespace DemoApp
             }
 
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "WAV files (*.wav)|*.wav";
+            dialog.Filter = "WAV files (*.wav)|*.wav| MP3 files (*.mp3)|*.mp3| AAC files (*.aac)|*.aac";
             dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
             dialog.Title = "Select a .WAV file";
             if (dialog.ShowDialog() != true)
+                return;
+
+            string fileName = FfmpegConverter.ConvertWavFormat(dialog.FileName);
+            if (fileName == null)
                 return;
 
             btnStart.IsEnabled = false;
@@ -80,7 +85,7 @@ namespace DemoApp
             speechConfig.SetProperty(PropertyId.Speech_SegmentationSilenceTimeoutMs, timeout.ToString());
             speechConfig.SetProperty(PropertyId.SpeechServiceResponse_DiarizeIntermediateResults, "true");
 
-            using (AudioConfig audioConfig = AudioConfig.FromWavFileInput(dialog.FileName))
+            using (AudioConfig audioConfig = AudioConfig.FromWavFileInput(fileName))
             {
                 tbDebug.Text = "Loaded " + dialog.FileName;
                 // Create a conversation transcriber using audio stream input
@@ -98,7 +103,7 @@ namespace DemoApp
         {
             void UpdateText()
             {
-                tbDebug.Text = "Session stopped.\n";
+                tbDebug.Text = "Session stopped.";
                 stopwatch.Stop();
                 timespan.Content = $"{stopwatch.ElapsedMilliseconds / 1000} s";
 
@@ -118,6 +123,9 @@ namespace DemoApp
                 tbDebug.Text = $"Cancelled, reason={e.Reason}, error={e.ErrorCode}\n";
                 stopwatch.Stop();
                 timespan.Content = $"{stopwatch.ElapsedMilliseconds / 1000} s";
+
+                string msg = $"Cancelled, reason={e.Reason}, error={e.ErrorCode}\nDetail={e.ErrorDetails}";
+                MessageBox.Show(msg, "Error");
             }
             RunOnUi(UpdateText);
             RunOnUi(EnableUi);

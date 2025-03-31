@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -109,7 +110,7 @@ namespace AssemblyAiDemoApp
             //}
 
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "WAV files (*.wav)|*.wav| MP3 files (*.mp3)|*.mp3| ACC files (*.acc)|*.acc";
+            dialog.Filter = "WAV files (*.wav)|*.wav| MP3 files (*.mp3)|*.mp3| AAC files (*.aac)|*.aac";
             dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
             dialog.Title = "Select an audio file";
             if (dialog.ShowDialog() != true)
@@ -124,12 +125,20 @@ namespace AssemblyAiDemoApp
                 LanguageDetection = chkAutoDetect.IsChecked,
                 SpeechModel = cbModel.SelectedIndex == 1 ? SpeechModel.Nano : SpeechModel.Best,
                 SpeakerLabels = chkSpeaker.IsChecked,
-                FormatText = true
+                FormatText = true,
+                AutoChapters = chkAutoChapter.IsChecked,
+                Summarization = chkSummary.IsChecked
             };
 
             if (chkSpeaker.IsChecked == true && cbSpeakerCount.SelectedIndex > 0)
             {
                 tp.SpeakersExpected = cbSpeakerCount.SelectedIndex + 1;
+            }
+
+            if (chkSummary.IsChecked == true)
+            {
+                tp.SummaryType = SummaryType.Bullets;
+                tp.SummaryModel = SummaryModel.Informative;
             }
 
             FileInfo fileInfo = new FileInfo(dialog.FileName);
@@ -154,6 +163,8 @@ namespace AssemblyAiDemoApp
                 // checks if transcript.Status == TranscriptStatus.Completed, throws an exception if not
                 transcript.EnsureStatusCompleted();
                 ShowResult(transcript);
+                // delete it on server
+                //transcript = await client.Transcripts.DeleteAsync(transcript.Id);
             }
             catch (Exception ex)
             {
@@ -182,9 +193,9 @@ namespace AssemblyAiDemoApp
             stopwatch.Stop();
             timespan.Content = $"{stopwatch.Elapsed.TotalSeconds} s";
 
-            if (transcript.Utterances != null && transcript.Utterances.Count() > 0)
+            if (transcript.Utterances != null && transcript.Utterances.Any())
             {
-                foreach(TranscriptUtterance tu in transcript.Utterances)
+                foreach (TranscriptUtterance tu in transcript.Utterances)
                 {
                     TimeSpan start = TimeSpan.FromMilliseconds(tu.Start);
                     TimeSpan end = TimeSpan.FromMilliseconds(tu.End);
@@ -195,13 +206,65 @@ namespace AssemblyAiDemoApp
                     newItem.Text = tu.Text;
                     newItem.SpeakerId = tu.Speaker;
                     newItem.TimeText = timeText;
+                    newItem.Start = tu.Start;
+                    newItem.End = tu.End;
                     conversationItems.Add(newItem);
+                }
+                if (transcript.Chapters != null && transcript.Chapters.Any())
+                {
+                    int cIndex = 0;
+                    int tIndex = 0;
+                    foreach (Chapter chapter in transcript.Chapters)
+                    {
+                        cIndex++;
+                        for (; tIndex < conversationItems.Count; tIndex++)
+                        {
+                            if (conversationItems[tIndex].Start >= chapter.Start)
+                            {
+                                break;
+                            }
+                        }
+
+                        TimeSpan start = TimeSpan.FromMilliseconds(chapter.Start);
+                        TimeSpan end = TimeSpan.FromMilliseconds(chapter.End);
+                        string timeText = $"[{start.ToString(@"mm\:ss")}-{end.ToString(@"mm\:ss")}]";
+
+                        ConversationItem newItem = new ConversationItem();
+                        newItem.Text = chapter.Headline;
+                        newItem.SpeakerId = $"Chapter {cIndex}";
+                        newItem.TimeText = timeText;
+                        newItem.Start = chapter.Start;
+                        newItem.End = chapter.End;
+                        conversationItems.Insert(tIndex, newItem);
+                        if (tIndex < conversationItems.Count - 1)
+                            tIndex++;
+                    }
+                }
+                if (!string.IsNullOrEmpty(transcript.Summary))
+                {
+                    ConversationItem summaryItem = new ConversationItem();
+                    summaryItem.Text = transcript.Summary;
+                    summaryItem.SpeakerId = "Summary";
+                    conversationItems.Insert(0, summaryItem);
                 }
                 listbox.Visibility = Visibility.Visible;
             }
             else
             {
-                tbText.Text = transcript.Text;
+                if (!string.IsNullOrEmpty(transcript.Summary))
+                {
+                    tbText.Text += $"[Summary]\n{transcript.Summary}\n\n";
+                }
+                if (transcript.Chapters != null && transcript.Chapters.Any())
+                {
+                    int index = 0;
+                    foreach (Chapter chapter in transcript.Chapters)
+                    {
+                        index++;
+                        tbText.Text += $"[Chapter {index}]\n{chapter.Headline}\n";
+                    }
+                }
+                tbText.Text += transcript.Text;
             }
 
             //btnStart.IsEnabled = true;
@@ -268,6 +331,16 @@ namespace AssemblyAiDemoApp
             Clipboard.Clear();
             Clipboard.SetText(text);
         }
+
+        private void ChkAutoChapter_OnChecked(object sender, RoutedEventArgs e)
+        {
+            chkSummary.IsChecked = false;
+        }
+
+        private void ChkSummary_OnChecked(object sender, RoutedEventArgs e)
+        {
+            chkAutoChapter.IsChecked = false;
+        }
     }
 
     internal class ConversationItem : INotifyPropertyChanged
@@ -275,6 +348,8 @@ namespace AssemblyAiDemoApp
         private string _speakerId;
         private string _text;
         private string _timeText;
+
+        public int Start, End;
 
         public string SpeakerId
         {
