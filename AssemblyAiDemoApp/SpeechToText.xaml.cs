@@ -23,7 +23,6 @@ namespace AssemblyAiDemoApp
     public partial class SpeechToText : Window
     {
         private AssemblyAIClient client;
-        private NextcloudManager manager = new NextcloudManager();
         private readonly List<string> localesNano = new List<string>();
         private readonly List<string> localesBest;
         private CancellationTokenSource cts;

@@ -62,7 +62,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Keys.cs" />
-    <Compile Include="NextcloudManager.cs" />
     <Compile Include="RealtimeSpeak.xaml.cs">
       <DependentUpon>RealtimeSpeak.xaml</DependentUpon>
     </Compile>
