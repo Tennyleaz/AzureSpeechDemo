@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="google stt global.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="google stt global.json" />
+    <EmbeddedResource Include="google stt sea.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Speech.V2" Version="1.4.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.11.0" />
+  </ItemGroup>
+
+</Project>

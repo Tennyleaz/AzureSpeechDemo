@@ -126,7 +126,9 @@ namespace AssemblyAiDemoApp
                 SpeakerLabels = chkSpeaker.IsChecked,
                 FormatText = true,
                 AutoChapters = chkAutoChapter.IsChecked,
-                Summarization = chkSummary.IsChecked
+                Summarization = chkSummary.IsChecked,
+                Punctuate = true,
+                //Disfluencies = true
             };
 
             if (chkSpeaker.IsChecked == true && cbSpeakerCount.SelectedIndex > 0)
