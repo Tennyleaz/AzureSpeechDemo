@@ -68,7 +68,7 @@ namespace GoogleSpeechDemoApp
 
         public override string ToString()
         {
-            return ModelName;
+            return ModelName.Replace('_', '-');
         }
     }
 }

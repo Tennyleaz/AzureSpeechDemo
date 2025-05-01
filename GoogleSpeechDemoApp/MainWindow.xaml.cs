@@ -219,6 +219,11 @@ namespace GoogleSpeechDemoApp
                 WriteLog("Billed duration: " + result.TotalBilledDuration + "\n");
                 foreach (var file in result.Results.Values)
                 {
+                    if (file.Error != null )
+                    {
+                        WriteLog(file.Error.ToString());
+                        return null;
+                    }
                     //Console.WriteLine(file.CloudStorageResult);
                     //tbRecognizing.Text += file.CloudStorageResult.Uri + "\n";
                     return file.InlineResult.Transcript;
@@ -231,19 +236,26 @@ namespace GoogleSpeechDemoApp
 
         private async Task<Google.Apis.Storage.v1.Data.Object> UploadGoogleStorage(string fileName)
         {
-            WriteLog("Uploading audio file to GCS...");
+
             //Bucket bucket = await storageClient.GetBucketAsync(BUCKET_NAME);
-            FileInfo fileInfo = new FileInfo(fileName);
-            string contentType;
-            if (fileInfo.Extension == ".wav")
-                contentType = "audio/wav";
-            else if (fileInfo.Extension == ".mp3")
-                contentType = "audio/mpeg";
-            else if (fileInfo.Extension == ".aac")
-                contentType = "audio/aac";
-            else
-                throw new Exception("Unsupported file type");
-            await using FileStream fs = new FileStream(fileName, FileMode.Open);
+            //FileInfo fileInfo = new FileInfo(fileName);
+            //string contentType;
+            //if (fileInfo.Extension == ".wav")
+            //    contentType = "audio/wav";
+            //else if (fileInfo.Extension == ".mp3")
+            //    contentType = "audio/mpeg";
+            //else if (fileInfo.Extension == ".aac")
+            //    contentType = "audio/aac";
+            //else
+            //    throw new Exception("Unsupported file type");
+
+            WriteLog("Conver with ffmpeg...");
+            string outFileName = FfmpegConverter.ConvertWavFormat(fileName);
+            string contentType = "audio/wav";
+            FileInfo fileInfo = new FileInfo(outFileName);
+
+            WriteLog("Uploading audio file to GCS...");
+            await using FileStream fs = new FileStream(outFileName, FileMode.Open);
             var gcsObject = await storageClient.UploadObjectAsync(BUCKET_NAME, $"audio-files/{fileInfo.Name}", contentType, fs);
             return gcsObject;
         }
@@ -287,15 +299,24 @@ namespace GoogleSpeechDemoApp
         {
             tbText.Text = "";
             TimeSpan startTime = TimeSpan.Zero;
-            foreach (SpeechRecognitionResult result in transcripts.Results)
+            List<SpeechRecognitionResult> results = transcripts.Results.Where(x => x.Alternatives.Count > 0).ToList();
+            results.Sort(CompareResult);
+            foreach (SpeechRecognitionResult result in results)
             {
-                if (result.Alternatives.Count > 0)
+                //if (result.Alternatives.Count > 0)
                 {
                     TimeSpan endTime = startTime + result.ResultEndOffset.ToTimeSpan();
                     tbText.Text += $"[{startTime.ToString(@"mm\:ss")}-{endTime.ToString(@"mm\:ss")}]\n{result.Alternatives[0].Transcript}\n";
                     startTime = endTime;
                 }
             }
+        }
+
+        private static int CompareResult(SpeechRecognitionResult x, SpeechRecognitionResult y)
+        {
+            int xEnd = x.ResultEndOffset.ToTimeSpan().Milliseconds;
+            int yEnd = y.ResultEndOffset.ToTimeSpan().Milliseconds;
+            return xEnd.CompareTo(yEnd);
         }
 
         internal SttLanguage SelectedLanguage
